@@ -19,4 +19,14 @@ beforeEach(() => {
         calculateInterest();
         expect(document.getElementById('output').innerHTML).toContain('⚠️ Please enter valid values.');
     });
+    it("should calculate correct interest for 3 months", () => {
+    document.getElementById("principal").value = "10000";
+    document.getElementById("months").value = "3";
+
+    calculateInterest();
+
+    const output = document.getElementById("output").innerHTML;
+    expect(output).toContain("Ksh"); // has prefix
+    expect(parseFloat(output.replace("Ksh", ""))).toBeGreaterThan(10000); // should increase
+  });
 })
