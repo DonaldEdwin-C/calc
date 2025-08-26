@@ -30,9 +30,10 @@
   <h3>Results</h3>
   <pre id="output"></pre>
 
-  <script src="/src/main.js"></script>
+  <script type="module" src="/src/main.js"></script>
   <script>
-    const baseUrl = "https://clients.cytonn.com"; // your API base
+
+    const baseUrl = "https://clients.cytonn.com";
 
     document.getElementById("calculate").addEventListener("click", async () => {
       const fundChoice = document.getElementById("fund").value;

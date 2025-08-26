@@ -1,9 +1,9 @@
-class BaseFundCalculator {
+export class BaseFundCalculator {
   constructor(baseUrl, fundName) {
     this.baseUrl = baseUrl;
     this.fundName = fundName;
     this.taxRate = 0.15;
-    this.dailyYieldRate = 0.13/ 365;
+    this.dailyYieldRate = 0.00058;
     this.minDeposit = 0; // overridden in subclasses
   }
 
@@ -62,12 +62,14 @@ class BaseFundCalculator {
 
     const days = months * 30;
     let balance = amount;
-
+    let totalTax = 0;
     for (let day = 1; day <= days; day++) {
       const gross = balance * this.dailyYieldRate;
       const tax = gross * this.taxRate;
       const net = gross - tax;
       balance += net;
+      totalTax += tax;
+
 
       // subtract ledger fee if applicable
       balance -= this.applyLedgerFee(day);
@@ -80,6 +82,7 @@ class BaseFundCalculator {
       days,
       finalBalance: balance,
       netReturn: balance - amount,
+      totalTax
     };
   }
 
@@ -90,7 +93,7 @@ class BaseFundCalculator {
 }
 
 // CMMF: min 100, ledger fee 50 each month after 6 months
-class CMMFCalculator extends BaseFundCalculator {
+export class CMMFCalculator extends BaseFundCalculator {
   constructor(baseUrl) {
     super(baseUrl, "CMMF"); // must match API fund name
     this.minDeposit = 100;
@@ -107,7 +110,7 @@ class CMMFCalculator extends BaseFundCalculator {
 }
 
 // Cytonn High Yield Fund: min 100,000, no fees
-class CHYFCalculator extends BaseFundCalculator {
+export class CHYFCalculator extends BaseFundCalculator {
   constructor(baseUrl) {
     super(baseUrl, "Cytonn High Yield Fund"); // must match API fund name
     this.minDeposit = 100000;

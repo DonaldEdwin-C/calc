@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, toContain } from "vitest";
-import { calculateInterest } from "./main.js"
+import { calculateInterest } from "./src/main.js"
 
 describe ("calculateInterest (DOM-based)", () => {
  

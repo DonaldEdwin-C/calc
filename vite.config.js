@@ -1,10 +1,21 @@
-import { defineConfig } from 'vite';
-import tailwindcss from '@tailwindcss/vite';
+import { defineConfig } from "vite";
+import tailwindcss from "@tailwindcss/vite";
 
 export default defineConfig({
-    test: {
-        environment: 'jsdom',
-      },
-
   plugins: [tailwindcss()],
+
+  build: {
+    lib: {
+      entry: "src/main.js", // 👈 your package entry point
+      name: "InvestmentCalculator",     // 👈 UMD global name
+      fileName: (format) => `investment-calculator.${format}.js`,
+    },
+    rollupOptions: {
+      
+      external: [],
+      output: {
+        globals: {},
+      },
+    },
+  },
 });
