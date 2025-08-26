@@ -2,55 +2,86 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Fund Calculator</title>
+  <title>Money Market Calculator</title>
+  <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-  <h2>Investment Calculator</h2>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center p-6">
 
-  <label for="fund">Select Fund:</label>
-  <select id="fund">
-    <option value="cmmf">CMMF</option>
-    <option value="chyf">Cytonn High Yield Fund</option>
-  </select>
+  <div class="w-full max-w-3xl bg-white shadow-xl rounded-2xl p-6 space-y-6">
+    <!-- Title -->
+    <h1 class="text-2xl font-bold text-center text-gray-800">💰 Money Market Calculator</h1>
 
-  <br><br>
+    <!-- Fund Selection -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div data-fund="cmmf"
+           class="fund-card border border-gray-300 rounded-xl p-4 cursor-pointer hover:shadow-md transition">
+        <h2 class="text-lg font-semibold">Money Market Funds</h2>
+        <p class="text-sm text-gray-500">2.85% APY</p>
+      </div>
+      <div data-fund="high-yield"
+           class="fund-card border border-gray-300 rounded-xl p-4 cursor-pointer hover:shadow-md transition">
+        <h2 class="text-lg font-semibold">High-Yield Fund</h2>
+        <p class="text-sm text-gray-500">4.25% APY</p>
+      </div>
+    </div>
 
-  <label for="amount">Amount (KES):</label>
-  <input type="number" id="amount" />
+    <!-- Fund Info -->
+    <div class="bg-gray-50 p-4 rounded-lg text-center">
+      <p class="text-gray-600">Selected Fund: <span class="font-bold fund-name">None</span></p>
+      <p class="text-gray-600">Rate: <span class="font-bold fund-rate">-</span></p>
+    </div>
 
-  <br><br>
+    <!-- Calculator Form -->
+    <form id="calculatorForm" class="space-y-4">
+      <!-- Investment Amount -->
+      <div>
+        <label for="amount" class="block text-sm font-medium text-gray-700">Investment Amount ($)</label>
+        <input type="number" id="amount"
+               class="mt-1 w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 outline-none" />
+        <p id="amountError" class="text-red-500 text-sm mt-1 hidden"></p>
+      </div>
 
-  <label for="months">Months:</label>
-  <input type="number" id="months" />
+      <!-- Timeframe -->
+      <div>
+        <label for="timeframe" class="block text-sm font-medium text-gray-700">Timeframe (Years)</label>
+        <input type="number" id="timeframe"
+               class="mt-1 w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 outline-none" />
+        <p id="timeframeError" class="text-red-500 text-sm mt-1 hidden"></p>
+      </div>
 
-  <br><br>
+      <!-- Submit Button -->
+      <button type="submit"
+              class="w-full bg-indigo-600 text-white py-2 rounded-lg hover:bg-indigo-700 transition">
+        Calculate Returns
+      </button>
+    </form>
 
-  <button id="calculate">Calculate</button>
+    <!-- Results -->
+    <div id="resultsContainer" class="hidden bg-green-50 border border-green-200 rounded-lg p-4 space-y-2">
+      <h3 class="text-lg font-semibold text-green-700">📊 Results</h3>
+      <p>Initial Investment: <span id="initialAmount" class="font-bold"></span></p>
+      <p>Interest Earned: <span id="interestEarned" class="font-bold"></span></p>
+      <p>Final Balance: <span id="finalBalance" class="font-bold"></span></p>
+      <p>Effective Annual Rate: <span id="effectiveRate" class="font-bold"></span></p>
+    </div>
+  </div>
 
-  <h3>Results</h3>
-  <pre id="output"></pre>
+  <!-- Toasts -->
+  <div id="errorToast"
+       class="toast fixed bottom-6 right-6 hidden bg-red-500 text-white px-4 py-2 rounded-lg shadow-md">
+    <span class="toast-message"></span>
+    <button onclick="hideToast()" class="ml-2 text-white font-bold">✖</button>
+  </div>
 
-  <script src="/src/main.js"></script>
-  <script>
-    const baseUrl = "https://clients.cytonn.com"; // your API base
+  <div id="successToast"
+       class="toast fixed bottom-6 right-6 hidden bg-green-500 text-white px-4 py-2 rounded-lg shadow-md">
+    <span class="toast-message"></span>
+    <button onclick="hideToast()" class="ml-2 text-white font-bold">✖</button>
+  </div>
 
-    document.getElementById("calculate").addEventListener("click", async () => {
-      const fundChoice = document.getElementById("fund").value;
-      const amount = parseFloat(document.getElementById("amount").value);
-      const months = parseInt(document.getElementById("months").value);
-
-      let calculator;
-      if (fundChoice === "cmmf") {
-        calculator = new CMMFCalculator(baseUrl);
-      } else {
-        calculator = new CHYFCalculator(baseUrl);
-      }
-
-      await calculator.fetchRate();
-      const result = calculator.calculate(amount, months);
-
-      document.getElementById("output").textContent = JSON.stringify(result, null, 2);
-    });
+  <!-- Your JS -->
+  <script src="/script.js">
   </script>
+
 </body>
 </html>
