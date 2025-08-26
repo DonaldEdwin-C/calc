@@ -75,6 +75,7 @@ class MoneyMarketCalculator {
 
     validateAmount(input) {
         const amount = parseFloat(input.value);
+        console.log(amount)
         const errorElement = document.getElementById('amountError');
 
         this.clearError(input, errorElement);
@@ -150,6 +151,7 @@ class MoneyMarketCalculator {
         }
 
         const fund = this.funds[this.selectedFund];
+        console.log(fund)
         
         // Calculate compound interest: A = P(1 + r)^t
         const finalBalance = amount * Math.pow(1 + fund.rate, timeframe);

@@ -1,11 +1,154 @@
 class BaseFundCalculator {
-  constructor(baseUrl, fundName) {
-    this.baseUrl = baseUrl;
-    this.fundName = fundName;
+    //baseUrl, fundName
+  constructor() {
+    this.baseUrl = null;
+    this.fundName = null;
     this.taxRate = 0.15;
-    this.dailyYieldRate = 0.13/ 365;
-    this.minDeposit = 0; // overridden in subclasses
+    this.dailyYieldRate = 0.00058;
+    this.minDeposit = 0;
+    
+    
+    
+    this.init() 
+    this.funds = {
+            standard: {
+                name: 'Standard Fund',
+                rate: 0.0285,
+                minimumBalance: 100,
+                displayRate: '2.85% APY'
+            },
+            'high-yield': {
+                name: 'High-Yield Fund',
+                rate: 0.0425,
+                minimumBalance: 100000,
+                displayRate: '4.25% APY'
+            }
+        };
+        
+    
   }
+
+  
+init() {
+        this.bindEvents();
+    }
+
+
+bindEvents() {
+        // Fund selection
+        document.querySelectorAll('.fund-card').forEach(card => {
+            card.addEventListener('click', (e) => {
+                const fundType = e.currentTarget.dataset.fund;
+                this.selectFund(fundType);
+            });
+        });
+
+        // Form submission
+        const form = document.getElementById('calculatorForm');
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            this.calculate();
+        });
+
+        // Input validation
+        document.getElementById('amount').addEventListener('input', (e) => {
+            this.validateAmount(e.target);
+        });
+
+        document.getElementById('timeframe').addEventListener('input', (e) => {
+            this.validateTimeframe(e.target);
+        });
+    }
+
+selectFund(fundType) {
+        if (!this.funds[fundType]) {
+            this.showError('Invalid fund selection.');
+            return;
+        }
+
+        // Update selected fund
+        this.selectedFund = fundType;
+
+        // Update UI
+        document.querySelectorAll('.fund-card').forEach(card => {
+            card.classList.remove('selected');
+        });
+        document.querySelector(`[data-fund="${fundType}"]`).classList.add('selected');
+
+        // Update fund info
+        const fund = this.funds[fundType];
+        document.querySelector('.fund-name').textContent = fund.name;
+        document.querySelector('.fund-rate').textContent = fund.displayRate;
+
+        // Hide results when fund changes
+        document.getElementById('resultsContainer').style.display = 'none';
+    }
+
+    validateAmount(input) {
+        const amount = parseFloat(input.value);
+        console.log("amount here",amount)
+        const errorElement = document.getElementById('amountError');
+        console.log(errorElement)
+
+        this.clearError(input, errorElement);
+
+        if (input.value && (isNaN(amount) || amount <= 0)) {
+            console.log('should be true')
+            this.showFieldError(input, errorElement, 'Please enter a valid amount greater than $0.');
+            return false;
+        }
+
+        if (this.selectedFund && amount && amount < this.funds[this.selectedFund].minimumBalance) {
+            this.showFieldError(input, errorElement, `Minimum investment for this fund is Kes ${this.funds[this.selectedFund].minimumBalance.toLocaleString()}.`);
+            return false;
+        }
+
+        // if (amount && amount > 10000000) {
+        //     this.showFieldError(input, errorElement, 'Maximum investment amount is $10,000,000.');
+        //     return false;
+        // }
+
+        return true;
+    }
+    validateTimeframe(input) {
+        const timeframe = parseFloat(input.value);
+        const errorElement = document.getElementById('timeframeError');
+
+        this.clearError(input, errorElement);
+
+        if (input.value && (isNaN(timeframe) || timeframe <= 0)) {
+            this.showFieldError(input, errorElement, 'Please enter a valid time period greater than 0.');
+            return false;
+        }
+
+        if (timeframe && timeframe > 50) {
+            this.showFieldError(input, errorElement, 'Maximum time period is 50 years.');
+            return false;
+        }
+
+        return true;
+    }
+   clearError(input, errorElement) {
+        input.classList.remove('error');
+        errorElement.textContent = '';
+        errorElement.classList.remove('show');
+    }
+showFieldError(input, errorElement, message) {
+        input.classList.add('error');
+        errorElement.textContent = message;
+        errorElement.classList.add('show');
+    }
+
+
+
+
+
+
+
+
+
+
+
 
   async fetchRate() {
     try {
@@ -37,8 +180,34 @@ class BaseFundCalculator {
     }
   }
 
-  calculate(amount, months = 1) {
-    if (amount < this.minDeposit) {
+  calculate(months = 1) {
+
+  if (!this.selectedFund) {
+            this.showError('Please select a fund before calculating returns.');
+            return;
+        }
+
+        const amountInput = document.getElementById('amount');
+        const timeframeInput = document.getElementById('timeframe');
+        
+        if (!this.validateAmount(amountInput) || !this.validateTimeframe(timeframeInput)) {
+            return;
+        }
+
+        const amount = parseFloat(amountInput.value);
+        const timeframe = parseFloat(timeframeInput.value);
+
+        if (!amountInput || !timeframe) {
+            this.showError('Please enter both investment amount and time period.');
+            return;
+        }
+
+        const fund = this.funds[this.selectedFund];
+
+
+
+
+    if (amountInput < this.minDeposit) {
       return {
         error: `Minimum deposit for ${this.fundName} is KES ${this.minDeposit}`,
       };
@@ -46,10 +215,10 @@ class BaseFundCalculator {
     if (this.dailyYieldRate === null) {
       return { error: "Rate not loaded yet. Call fetchRate() first." };
     }
-    if (months < 0) {
+    if (timeframe < 0) {
       return { error: "Months cannot be negative" };
     }
-    if (months === 0) {
+    if (timeframe === 0) {
       return {
         fundName: this.fundName,
         investedAmount: amount,
@@ -60,7 +229,7 @@ class BaseFundCalculator {
       };
     }
 
-    const days = months * 30;
+    const days = timeframe * 30;
     let balance = amount;
 
     for (let day = 1; day <= days; day++) {
@@ -70,9 +239,19 @@ class BaseFundCalculator {
       balance += net;
 
       // subtract ledger fee if applicable
-      balance -= this.applyLedgerFee(day);
-    }
+    //   balance -= this.applyLedgerFee(day);
+    
+    balance -= fund.name === 'Standard Fund' ? applyLedgerFee(day):0
 
+
+    }
+    console.log('data',{amount,timeframe,days,balance})
+    const interestEarned = balance - amount
+    const finalBalance = balance
+
+
+
+      this.displayResults(amount, interestEarned, finalBalance);
     return {
       fundName: this.fundName,
       investedAmount: amount,
@@ -82,21 +261,72 @@ class BaseFundCalculator {
       netReturn: balance - amount,
     };
   }
+  displayResults(initialAmount, interestEarned, finalBalance) {
+    //effectiveRate
+        document.getElementById('initialAmount').textContent = this.formatCurrency(initialAmount);
+        document.getElementById('interestEarned').textContent = this.formatCurrency(interestEarned);
+        document.getElementById('finalBalance').textContent = this.formatCurrency(finalBalance);
+        // document.getElementById('effectiveRate').textContent = `${effectiveRate.toFixed(2)}%`;
+
+        // Show results container with animation
+        const resultsContainer = document.getElementById('resultsContainer');
+        resultsContainer.style.display = 'block';
+        resultsContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+
 
   // Default: no fees
-  applyLedgerFee(day) {
-    return 0;
-  }
+//   applyLedgerFee(day) {
+//     return 0;
+//   }
+  formatCurrency(amount) {
+        return new Intl.NumberFormat('en-US', {
+            style: 'currency',
+            currency: 'Kes',
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        }).format(amount);
+    }
+
+    showError(message) {
+        console.log('checking if the is a message')
+        this.showToast(message, 'error');
+    }
+
+    showToast(message, type) {
+        const toastId = type === 'error' ? 'errorToast' : 'successToast';
+        console.log(toastId)
+        const toast = document.getElementById(toastId);
+        const messageElement = toast.querySelector('.toast-message');
+        
+        messageElement.textContent = message;
+        toast.classList.add('show');
+
+        // Auto-hide after 4 seconds
+        setTimeout(() => {
+            this.hideToast();
+        }, 4000);
+    }
+
+    hideToast() {
+        document.querySelectorAll('.toast').forEach(toast => {
+            toast.classList.remove('show');
+        });
+    }
+
+    
+  
 }
 
-// CMMF: min 100, ledger fee 50 each month after 6 months
-class CMMFCalculator extends BaseFundCalculator {
-  constructor(baseUrl) {
-    super(baseUrl, "CMMF"); // must match API fund name
-    this.minDeposit = 100;
-  }
+function hideToast() {
+    document.querySelectorAll('.toast').forEach(toast => {
+        toast.classList.remove('show');
+    });
 
-  applyLedgerFee(day) {
+
+}
+  function applyLedgerFee(day) {
     const month = Math.floor(day / 30); // completed months
     // Apply ledger fee monthly starting from month 7
     if (month >= 7 && day % 30 === 0) {
@@ -104,15 +334,55 @@ class CMMFCalculator extends BaseFundCalculator {
     }
     return 0;
   }
-}
 
-// Cytonn High Yield Fund: min 100,000, no fees
-class CHYFCalculator extends BaseFundCalculator {
-  constructor(baseUrl) {
-    super(baseUrl, "Cytonn High Yield Fund"); // must match API fund name
-    this.minDeposit = 100000;
-  }
-}
+// Initialize the application
+document.addEventListener('DOMContentLoaded', () => {
+   new  BaseFundCalculator()
+});
 
-window.CMMFCalculator = CMMFCalculator;
-window.CHYFCalculator = CHYFCalculator;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// // CMMF: min 100, ledger fee 50 each month after 6 months
+// class CMMFCalculator extends BaseFundCalculator {
+//   constructor(baseUrl) {
+//     super(baseUrl, "CMMF"); // must match API fund name
+//     this.minDeposit = 100;
+//   }
+
+//   applyLedgerFee(day) {
+//     const month = Math.floor(day / 30); // completed months
+//     // Apply ledger fee monthly starting from month 7
+//     if (month >= 7 && day % 30 === 0) {
+//       return 50;
+//     }
+//     return 0;
+//   }
+// }
+
+// // Cytonn High Yield Fund: min 100,000, no fees
+// class CHYFCalculator extends BaseFundCalculator {
+//   constructor(baseUrl) {
+//     super(baseUrl, "Cytonn High Yield Fund"); // must match API fund name
+//     this.minDeposit = 100000;
+//   }
+// }
+
+// window.CMMFCalculator = CMMFCalculator;
+// window.CHYFCalculator = CHYFCalculator;
