@@ -94,19 +94,16 @@ selectFund(fundType) {
 
         if (input.value && (isNaN(amount) || amount <= 0)) {
             console.log('should be true')
-            this.showFieldError(input, errorElement, 'Please enter a valid amount greater than $0.');
+            this.showFieldError(input, errorElement, 'Please enter a valid amount greater than 0.');
             return false;
         }
 
         if (this.selectedFund && amount && amount < this.funds[this.selectedFund].minimumBalance) {
-            this.showFieldError(input, errorElement, `Minimum investment for this fund is Kes ${this.funds[this.selectedFund].minimumBalance.toLocaleString()}.`);
+            this.showFieldError(input, errorElement, `Minimum investment for this fund is  ${this.funds[this.selectedFund].minimumBalance.toLocaleString()}.`);
             return false;
         }
 
-        // if (amount && amount > 10000000) {
-        //     this.showFieldError(input, errorElement, 'Maximum investment amount is $10,000,000.');
-        //     return false;
-        // }
+        
 
         return true;
     }
@@ -121,10 +118,7 @@ selectFund(fundType) {
             return false;
         }
 
-        if (timeframe && timeframe > 50) {
-            this.showFieldError(input, errorElement, 'Maximum time period is 50 years.');
-            return false;
-        }
+       
 
         return true;
     }
@@ -182,10 +176,10 @@ showFieldError(input, errorElement, message) {
 
   calculate(months = 1) {
 
-  if (!this.selectedFund) {
-            this.showError('Please select a fund before calculating returns.');
-            return;
-        }
+//   if (!this.selectedFund) {
+//             this.showError('Please select a fund before calculating returns.');
+//             return;
+//         }
 
         const amountInput = document.getElementById('amount');
         const timeframeInput = document.getElementById('timeframe');
@@ -289,43 +283,8 @@ showFieldError(input, errorElement, message) {
         }).format(amount);
     }
 
-    showError(message) {
-        console.log('checking if the is a message')
-        this.showToast(message, 'error');
-    }
-
-    showToast(message, type) {
-        const toastId = type === 'error' ? 'errorToast' : 'successToast';
-        console.log(toastId)
-        const toast = document.getElementById(toastId);
-        const messageElement = toast.querySelector('.toast-message');
-        
-        messageElement.textContent = message;
-        toast.classList.add('show');
-
-        // Auto-hide after 4 seconds
-        setTimeout(() => {
-            this.hideToast();
-        }, 4000);
-    }
-
-    hideToast() {
-        document.querySelectorAll('.toast').forEach(toast => {
-            toast.classList.remove('show');
-        });
-    }
-
-    
-  
 }
 
-function hideToast() {
-    document.querySelectorAll('.toast').forEach(toast => {
-        toast.classList.remove('show');
-    });
-
-
-}
   function applyLedgerFee(day) {
     const month = Math.floor(day / 30); // completed months
     // Apply ledger fee monthly starting from month 7
