@@ -1,187 +1,56 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-  <meta charset="UTF-8" />
-  <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Vite App</title>
+  <meta charset="UTF-8">
+  <title>Fund Calculator</title>
 </head>
-
 <body>
+  <h2>Investment Calculator</h2>
 
-  </div>
-  <!-- End Comment Form -->
-  <!-- Features -->
-  <div class="overflow-hidden">
-    <div class="max-w-[85rem] px-4 py-10 sm:px-6 lg:px-8 lg:py-14 mx-auto">
-      <!-- Title -->
-      <div class="mx-auto max-w-2xl mb-8 lg:mb-14 text-center">
-        <h2 class="text-3xl lg:text-4xl text-gray-800 font-bold">
-          Calculate your Investment
-        </h2>
-      </div>
-      <!-- End Title -->
+  <label for="fund">Select Fund:</label>
+  <select id="fund">
+    <option value="cmmf">CMMF</option>
+    <option value="chyf">Cytonn High Yield Fund</option>
+  </select>
 
-      <div class="relative xl:w-10/12 xl:mx-auto">
-        <!-- Grid -->
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
-          <div>
-            <!-- Card -->
-            <div class="p-4 relative z-10 bg-white border border-gray-200 rounded-xl md:p-10">
-              <h3 class="text-xl font-bold text-gray-800">Cytonn High Yield Fund</h3>
-              <div class="text-sm text-gray-500">
-                Everything a small team needs.
-              </div>
+  <br><br>
 
+  <label for="amount">Amount (KES):</label>
+  <input type="number" id="amount" />
 
+  <br><br>
 
-              <!-- Card -->
-              <div class="mt-5 p-4 relative z-10 bg-white border border border-gray-200 rounded-xl sm:mt-10 md:p-10">
-                <form>
-                  <div class="mb-4 sm:mb-8">
-                    <label for="hs-feedback-post-comment-name-1" class="block mb-2 text-sm font-medium">initial
-                      Investment</label>
-                    <input type="text" id="hs-feedback-post-comment-name-1"
-                      class="py-2.5 sm:py-3 px-4 block w-full border border-gray-200 rounded-lg sm:text-sm focus:border-[#086c5c] focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none"
-                      placeholder="Ksh 0.00" />
-                  </div>
+  <label for="months">Months:</label>
+  <input type="number" id="months" />
 
-                  <div class="mb-4 sm:mb-8">
-                    <label for="hs-feedback-post-comment-email-1" class="block mb-2 text-sm font-medium">number of
-                      days</label>
-                    <input type="email" id="hs-feedback-post-comment-email-1"
-                      class="py-2.5 sm:py-3 px-4 block w-full border border-gray-200 rounded-lg sm:text-sm focus:border-[#086c5c] focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none"
-                      placeholder="0 days" />
-                  </div>
+  <br><br>
 
-                  <div>
-                    <label for="hs-feedback-post-comment-textarea-1"
-                      class="block mb-2 text-sm font-medium">Total</label>
-                    <div class="mt-1">
-                      <textarea id="hs-feedback-post-comment-textarea-1" name="hs-feedback-post-comment-textarea-1"
-                        rows="3"
-                        class="py-2.5 sm:py-3 px-4 block w-full border border-gray-200 rounded-lg sm:text-sm focus:border-[#086c5c] focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none"
-                        placeholder="Ksh 0.00"></textarea>
-                    </div>
-                  </div>
-                </form>
-              </div>
-              <!-- End Card -->
+  <button id="calculate">Calculate</button>
 
-              <div class="mt-5 grid grid-cols-2 gap-x-4 py-4 first:pt-0 last:pb-0">
-                <div>
-                  <p class="text-sm text-gray-500">withdraw anytime.</p>
-                  <p class="text-sm text-gray-500">No card required.</p>
-                </div>
+  <h3>Results</h3>
+  <pre id="output"></pre>
 
-                <div class="flex justify-end">
-                  <button type="button"
-                    class="py-3 px-4 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-gray-200 bg-[#086c5c] text-gray-100 shadow-2xs hover:bg-gray-50 hover:text-black0 disabled:opacity-50 disabled:pointer-events-none focus:outline-hidden focus:bg-gray-50">
-                    Calculate
-                  </button>
-                </div>
-              </div>
-            </div>
-            <!-- End Card -->
-          </div>
+  <script src="/src/main.js"></script>
+  <script>
+    const baseUrl = "https://clients.cytonn.com"; // your API base
 
-          <div>
-            <!-- Card -->
-            <div class=" p-5 relative z-10 bg-white border border-gray-200 rounded-xl md:p-10">
-              <h3 class="text-xl font-bold text-gray-800">Cytonn Money Market </h3>
-              <div class="text-sm text-gray-500">For growing businesses.</div>
-              <span
-                class="absolute top-0 end-0 rounded-se-xl rounded-es-xl text-xs font-medium bg-gray-800 text-white py-1.5 px-3">Most
-                popular</span>
+    document.getElementById("calculate").addEventListener("click", async () => {
+      const fundChoice = document.getElementById("fund").value;
+      const amount = parseFloat(document.getElementById("amount").value);
+      const months = parseInt(document.getElementById("months").value);
 
+      let calculator;
+      if (fundChoice === "cmmf") {
+        calculator = new CMMFCalculator(baseUrl);
+      } else {
+        calculator = new CHYFCalculator(baseUrl);
+      }
 
+      await calculator.fetchRate();
+      const result = calculator.calculate(amount, months);
 
-              <!-- Card -->
-              <div class="mt-5 p-4 relative z-10 bg-white border border border-gray-200 rounded-xl sm:mt-10 md:p-10">
-                <form>
-                  <div class="mb-4 sm:mb-8">
-                    <label for="hs-feedback-post-comment-name-1" class="block mb-2 text-sm font-medium">initial
-                      Investment</label>
-                    <input type="text" id="principal"
-                      class="py-2.5 sm:py-3 px-4 block w-full border border-gray-200 rounded-lg sm:text-sm focus:border-[#086c5c] focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none"
-                      placeholder="Ksh 0.00" />
-                  </div>
-
-                  <div class=" sm:mb-4">
-                    <label class="block mb-2 text-sm font-medium">number of
-                      months</label>
-                    <input type="number" id="months"
-                      class="py-2.5 sm:py-3 px-4 block w-full border border-gray-200 rounded-lg sm:text-sm focus:border-[#086c5c] focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none"
-                      placeholder="0 moths" />
-                  </div>
-                  <button type="button" id="calculate"
-                    class="py-3 px-4 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-transparent bg-[#086c5c] text-white hover:bg-blue-700 focus:outline-hidden focus:bg-blue-700 disabled:opacity-50 disabled:pointer-events-none">
-                    calculate
-                  </button>
-
-                  <div>
-<!-- 
-                    <div class="mt-3">
-                      <div id="output" rows="3"
-                        class="py-2.5 sm:py-3 px-4 block w-full border border-gray-200 rounded-lg sm:text-sm focus:border-[#086c5c] focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none"
-                        placeholder="Ksh 0.00"></div>
-                    </div> -->
-                    <div class="mt-5">
-                      <span class="text-3xl font-bold text-gray-800" id="output"></span>
-
-                    </div>
-                  </div>
-                </form>
-              </div>
-              <!-- End Card -->
-
-              <div class="mt-5 grid grid-cols-2 gap-x-4 py-4 first:pt-0 last:pb-0">
-
-                <div class="flex justify-end">
-
-                </div>
-              </div>
-            </div>
-            <!-- End Card -->
-          </div>
-        </div>
-        <!-- End Grid -->
-
-        <!-- SVG Element -->
-        <div class="hidden md:block absolute top-0 end-0 translate-y-16 translate-x-16">
-          <svg class="w-16 h-auto text-orange-500" width="121" height="135" viewBox="0 0 121 135" fill="none"
-            xmlns="http://www.w3.org/2000/svg">
-            <path d="M5 16.4754C11.7688 27.4499 21.2452 57.3224 5 89.0164" stroke="currentColor" stroke-width="10"
-              stroke-linecap="round" />
-            <path d="M33.6761 112.104C44.6984 98.1239 74.2618 57.6776 83.4821 5" stroke="currentColor" stroke-width="10"
-              stroke-linecap="round" />
-            <path d="M50.5525 130C68.2064 127.495 110.731 117.541 116 78.0874" stroke="currentColor" stroke-width="10"
-              stroke-linecap="round" />
-          </svg>
-        </div>
-        <!-- End SVG Element -->
-
-        <!-- SVG Element -->
-        <div class="hidden md:block absolute bottom-0 start-0 translate-y-16 -translate-x-16">
-          <svg class="w-56 h-auto text-cyan-500" width="347" height="188" viewBox="0 0 347 188" fill="none"
-            xmlns="http://www.w3.org/2000/svg">
-            <path
-              d="M4 82.4591C54.7956 92.8751 30.9771 162.782 68.2065 181.385C112.642 203.59 127.943 78.57 122.161 25.5053C120.504 2.2376 93.4028 -8.11128 89.7468 25.5053C85.8633 61.2125 130.186 199.678 180.982 146.248L214.898 107.02C224.322 95.4118 242.9 79.2851 258.6 107.02C274.299 134.754 299.315 125.589 309.861 117.539L343 93.4426"
-              stroke="currentColor" stroke-width="7" stroke-linecap="round" />
-          </svg>
-        </div>
-        <!-- End SVG Element -->
-      </div>
-
-      <div class="mt-7 text-center">
-        <p class="text-xs text-gray-400">Prices in USD. Taxes may apply.</p>
-      </div>
-    </div>
-  </div>
-  <!-- End Features -->
-
-  <script type="module" src="/src/main.js"></script>
+      document.getElementById("output").textContent = JSON.stringify(result, null, 2);
+    });
+  </script>
 </body>
-
 </html>
