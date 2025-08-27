@@ -12,16 +12,16 @@ class BaseFundCalculator {
     this.init() 
     this.funds = {
             standard: {
-                name: 'Standard Fund',
+                name: 'Money Market Fund',
                 rate: 0.0285,
                 minimumBalance: 100,
-                displayRate: '2.85% APY'
+                displayRate: '12.05% APY'
             },
             'high-yield': {
                 name: 'High-Yield Fund',
                 rate: 0.0425,
                 minimumBalance: 100000,
-                displayRate: '4.25% APY'
+                displayRate: '21.9% APY'
             }
         };
         
