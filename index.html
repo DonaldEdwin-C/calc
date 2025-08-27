@@ -1,56 +1,109 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Fund Calculator</title>
-</head>
-<body>
-  <h2>Investment Calculator</h2>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Money Market Calculator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="/src/assets/styles.css" />
+  </head>
+  <body class="bg-gray-100 min-h-screen flex items-center justify-center p-6">
+    <div class="w-full max-w-2xl bg-white shadow-xl rounded-md p-6 space-y-6">
+      <!-- Title -->
+      <div>
+        <img class="w-24" src="/src/cytonn_logo.svg" alt="" />
+        <h1 class="text-xl font-bold text-center text-gray-800">
+          Investment Calculator
+        </h1>
+      </div>
 
-  <label for="fund">Select Fund:</label>
-  <select id="fund">
-    <option value="cmmf">CMMF</option>
-    <option value="chyf">Cytonn High Yield Fund</option>
-  </select>
+      <!-- Fund Selection -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div
+          data-fund="CMMF"
+          class="fund-card flex justify-center items-center border focus:ring focus:ring-blue-300 border-gray-300 rounded-md p-4 cursor-pointer hover:shadow-md transition"
+        >
+          <h2 class="text-center text-neutral-700 text-md font-semibold">
+            Money Market fund
+          </h2>
+        </div>
+        <div
+          data-fund="CHYF"
+          class="fund-card flex justify-center items-center border border-gray-300 rounded-md p-4 cursor-pointer hover:shadow-md transition"
+        >
+          <h2 class="text-center text-neutral-700 text-md font-semibold">
+            High-Yield Fund
+          </h2>
+        </div>
+      </div>
 
-  <br><br>
+      <!-- Fund Info -->
+      <div class="bg-gray-50 p-4 rounded-md text-center">
+        <p class="text-gray-600">
+          Investment Fund:
+          <span class="font-bold text-[#086c5c] fund-name">None</span>
+        </p>
+        <p class="text-gray-600">
+          Rate: <span class="font-bold text-[#086c5c] fund-rate">-</span>
+        </p>
+      </div>
 
-  <label for="amount">Amount (KES):</label>
-  <input type="number" id="amount" />
+      <!-- Calculator Form -->
+      <form id="calculatorForm" class="space-y-4">
+        <!-- Investment Amount -->
+        <div>
+          <label for="amount" class="block text-sm font-medium text-gray-700"
+            >Investment Amount
+          </label>
+          <input
+            type="number"
+            id="amount"
+            class="mt-1 w-full border rounded-md px-3 py-2 focus:ring-2 focus:ring-indigo-500 outline-none"
+          />
+          <p id="amountError" class="text-red-500 text-sm mt-1"></p>
+        </div>
 
-  <br><br>
+        <!-- Timeframe -->
+        <div>
+          <label for="timeframe" class="block text-sm font-medium text-gray-700"
+            >Timeframe (Months)</label
+          >
+          <input
+            type="number"
+            id="timeframe"
+            class="mt-1 w-full border rounded-md px-3 py-2 focus:ring-2 focus:ring-indigo-500 outline-none"
+          />
+          <p id="timeframeError" class="text-red-500 text-sm mt-1"></p>
+        </div>
 
-  <label for="months">Months:</label>
-  <input type="number" id="months" />
+        <!-- Submit Button -->
+        <button
+          type="submit"
+          class="w-full bg-[#086c5c] text-white py-2 rounded-md transition"
+        >
+          Calculate
+        </button>
+      </form>
 
-  <br><br>
+      <!-- Results -->
+      <div
+        id="resultsContainer"
+        class="hidden bg-green-50 border border-green-200 rounded-md p-4 space-y-2"
+      >
+        <p>
+          Initial Investment:
+          <span id="initialAmount" class="font-semibold"></span>
+        </p>
+        <p>
+          Interest Earned:
+          <span id="interestEarned" class="font-semibold"></span>
+        </p>
+        <p>
+          Final Balance: <span id="finalBalance" class="font-semibold"></span>
+        </p>
+      </div>
+    </div>
 
-  <button id="calculate">Calculate</button>
-
-  <h3>Results</h3>
-  <pre id="output"></pre>
-
-  <script src="/src/main.js"></script>
-  <script>
-    const baseUrl = "https://clients.cytonn.com"; // your API base
-
-    document.getElementById("calculate").addEventListener("click", async () => {
-      const fundChoice = document.getElementById("fund").value;
-      const amount = parseFloat(document.getElementById("amount").value);
-      const months = parseInt(document.getElementById("months").value);
-
-      let calculator;
-      if (fundChoice === "cmmf") {
-        calculator = new CMMFCalculator(baseUrl);
-      } else {
-        calculator = new CHYFCalculator(baseUrl);
-      }
-
-      await calculator.fetchRate();
-      const result = calculator.calculate(amount, months);
-
-      document.getElementById("output").textContent = JSON.stringify(result, null, 2);
-    });
-  </script>
-</body>
+    <!-- Your JS -->
+    <script src="/src/main.js"></script>
+  </body>
 </html>
