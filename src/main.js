@@ -11,17 +11,17 @@ class BaseFundCalculator {
     
     this.init() 
     this.funds = {
-            standard: {
-                name: 'Standard Fund',
+            CMMF: {
+                name: 'CMMF',
                 rate: 0.0285,
                 minimumBalance: 100,
-                displayRate: '2.85% APY'
+                displayRate: '13% Annually'
             },
-            'high-yield': {
-                name: 'High-Yield Fund',
+            'CHYF': {
+                name: 'CHYF',
                 rate: 0.0425,
                 minimumBalance: 100000,
-                displayRate: '4.25% APY'
+                displayRate: '21% Annually'
             }
         };
         
@@ -235,7 +235,7 @@ showFieldError(input, errorElement, message) {
       // subtract ledger fee if applicable
     //   balance -= this.applyLedgerFee(day);
     
-    balance -= fund.name === 'Standard Fund' ? applyLedgerFee(day):0
+    balance -= fund.name === 'CMMF' ? applyLedgerFee(day):0
 
 
     }

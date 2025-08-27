@@ -1,0 +1,19 @@
+/* Regular weight */
+@font-face {
+  font-family: 'Proxima Nova';
+  src: url('./assets/fonts/proximanova_regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+}
+
+/* Bold weight */
+@font-face {
+  font-family: 'Proxima Nova';
+  src: url('./assets/fonts/proximanova_bold.otf') format('opentype');
+  font-weight: 700;
+  font-style: normal;
+}
+
+body {
+  font-family: 'Proxima Nova', sans-serif;
+}
