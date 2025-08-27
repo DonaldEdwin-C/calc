@@ -197,6 +197,7 @@ showFieldError(input, errorElement, message) {
         }
 
         const fund = this.funds[this.selectedFund];
+        // console.log('lets see the selected fund',)
 
 
 
